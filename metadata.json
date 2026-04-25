@@ -1,0 +1,6 @@
+{
+  "name": "Restaurante Pro",
+  "description": "Sistema integral de gestión gastronómica con roles de Administrador, Mesero, Cocinero y Cajero, incluyendo KDS y gestión de inventario.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
