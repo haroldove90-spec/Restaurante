@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Circle, 
@@ -13,19 +13,48 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import OrderFlow from './OrderFlow';
 
+import { getTables, subscribeToOrders } from '../../lib/dataService';
+import { supabase } from '../../lib/supabase';
+
 // Estilo de Alto Contraste para Meseros
 export default function WaiterDashboard() {
   const [selectedTable, setSelectedTable] = useState<any>(null);
   const [isOrdering, setIsOrdering] = useState(false);
+  const [mesas, setMesas] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const mesas = [
-    { id: 1, num: '01', status: 'ready', color: 'bg-emerald-500', label: 'Cuenta Pedida' },
-    { id: 2, num: '02', status: 'busy', color: 'bg-rose-600', label: 'Comiendo' },
-    { id: 3, num: '03', status: 'free', color: 'bg-slate-100', label: 'Libre' },
-    { id: 4, num: '04', status: 'waiting', color: 'bg-slate-950', label: 'Esperando' },
-    { id: 5, num: '05', status: 'free', color: 'bg-slate-100', label: 'Libre' },
-    { id: 6, num: '06', status: 'paying', color: 'bg-amber-400', label: 'Pagando' },
-  ];
+  useEffect(() => {
+    loadMesas();
+    
+    // Suscripción Realtime para detectar cambios en mesas u órdenes
+    const channel = supabase
+      .channel('table-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'mesas' }, () => loadMesas())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'ordenes' }, () => loadMesas())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  async function loadMesas() {
+    try {
+      const data = await getTables();
+      setMesas(data || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const getTableStatusStyle = (estado: string, mesaId: string) => {
+    // Aquí podríamos ver si hay una orden 'lista' para esta mesa
+    if (estado === 'ocupada') return 'bg-slate-950 text-white';
+    if (estado === 'reservada') return 'bg-amber-500 text-white';
+    return 'bg-white text-slate-900 border-2 border-slate-100 hover:border-rose-600';
+  };
 
   if (isOrdering && selectedTable) {
     return (
@@ -43,7 +72,7 @@ export default function WaiterDashboard() {
   if (selectedTable) {
     return (
       <div className="bg-slate-50 min-h-screen flex flex-col">
-        <header className="bg-rose-600 p-8 lg:p-12 flex justify-between items-center text-white shrink-0">
+        <header className="bg-rose-600 p-6 lg:p-10 flex justify-between items-center text-white shrink-0">
           <div className="flex items-center gap-6">
             <button 
               onClick={() => setSelectedTable(null)}
@@ -52,7 +81,7 @@ export default function WaiterDashboard() {
               <ChevronLeft className="w-8 h-8" />
             </button>
             <div>
-              <h1 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic leading-none">TABLE {selectedTable.num}</h1>
+              <h1 className="text-4xl lg:text-6xl font-black uppercase tracking-tighter italic leading-none">MESA {selectedTable.numero}</h1>
               <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-70 mt-2">Gestión de Servicio</p>
             </div>
           </div>
@@ -135,18 +164,16 @@ export default function WaiterDashboard() {
               onClick={() => setSelectedTable(mesa)}
               className={`
                 aspect-square rounded-[3rem] p-8 flex flex-col justify-between items-center text-center transition-all shadow-xl relative overflow-hidden group
-                ${mesa.status === 'free' ? 'bg-white text-slate-900 border-2 border-slate-100 hover:border-rose-600' : 
-                  mesa.status === 'busy' ? 'bg-slate-950 text-white' : 
-                  'bg-rose-600 text-white shadow-rose-500/20'}
+                ${getTableStatusStyle(mesa.estado, mesa.id)}
               `}
             >
               <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-5 rounded-bl-full transform translate-x-12 -translate-y-12" />
               
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-60">NÚMERO</span>
-              <span className="text-5xl lg:text-6xl font-black italic tracking-tighter">{mesa.num}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-60">MESA</span>
+              <span className="text-5xl lg:text-6xl font-black italic tracking-tighter">{mesa.numero}</span>
               <div className="flex flex-col items-center gap-1">
-                <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${mesa.status === 'free' ? 'bg-slate-100 text-slate-500' : 'bg-white/20 text-white'}`}>
-                  {mesa.label}
+                <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${mesa.estado === 'libre' ? 'bg-slate-100 text-slate-500' : 'bg-white/20 text-white'}`}>
+                  {mesa.estado}
                 </span>
               </div>
               

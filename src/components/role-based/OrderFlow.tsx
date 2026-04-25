@@ -11,6 +11,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { getProducts, createOrder } from '../../lib/dataService';
 
+import { useAuth } from '../../context/AuthContext';
+
 interface OrderFlowProps {
   table: any;
   onBack: () => void;
@@ -18,6 +20,7 @@ interface OrderFlowProps {
 }
 
 export default function OrderFlow({ table, onBack, onSuccess }: OrderFlowProps) {
+  const { profile } = useAuth();
   const [products, setProducts] = useState<any[]>([]);
   const [cart, setCart] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,8 +68,7 @@ export default function OrderFlow({ table, onBack, onSuccess }: OrderFlowProps) 
     if (cart.length === 0) return;
     setLoading(true);
     try {
-      // Nota: Aquí usaríamos el ID del mesero autenticado
-      await createOrder(table.id, 'mesero-test-id', cart);
+      await createOrder(table.id, profile?.id || 'mesero-test-id', cart);
       onSuccess();
     } catch (e) {
       console.error(e);
@@ -145,7 +147,7 @@ export default function OrderFlow({ table, onBack, onSuccess }: OrderFlowProps) 
       <div className="w-full lg:w-[450px] bg-white flex flex-col shadow-2xl relative z-10 border-l lg:border-slate-200">
         <header className="p-8 border-b border-slate-100">
           <h2 className="text-4xl font-black uppercase tracking-tighter italic text-slate-950">MY CART</h2>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-600 mt-2">Mesa {table.num} • Pedido en curso</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-600 mt-2">Mesa {table.numero} • Pedido en curso</p>
         </header>
         
         <div className="flex-1 p-8 space-y-6 overflow-y-auto scrollbar-hide">

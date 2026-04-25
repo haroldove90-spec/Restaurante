@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getProducts, upsertProduct, deleteProduct, getInventory, updateStock, getCategories } from '../../lib/dataService';
-import { Plus, Edit2, Trash2, Save, X, Package, FileText, Download, RefreshCw } from 'lucide-react';
+import { getProducts, upsertProduct, deleteProduct, getInventory, updateStock, getCategories, getTables, upsertTable, deleteTable, getOrders } from '../../lib/dataService';
+import { Plus, Edit2, Trash2, Save, X, Package, FileText, Download, RefreshCw, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { exportToPDF, exportToExcel } from '../../lib/exportUtils';
 
@@ -10,8 +10,11 @@ export default function ProductAdmin() {
   const [isLoading, setIsLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isInventoryTab, setIsInventoryTab] = useState(false);
+  const [isInventoryTab, setIsInventoryTab] = useState<'products' | 'stock' | 'tables'>('products');
   const [inventory, setInventory] = useState<any[]>([]);
+  const [tables, setTables] = useState<any[]>([]);
+  const [editingTable, setEditingTable] = useState<any>(null);
+  const [isTableModalOpen, setIsTableModalOpen] = useState(false);
 
   useEffect(() => {
     loadInitialData();
@@ -22,7 +25,8 @@ export default function ProductAdmin() {
     await Promise.all([
       loadProducts(),
       loadInventory(),
-      loadCategories()
+      loadCategories(),
+      loadTables()
     ]);
     setIsLoading(false);
   };
@@ -54,19 +58,55 @@ export default function ProductAdmin() {
     }
   };
 
-  const handleExportPDF = () => {
-    const cols = ['Nombre', 'Precio', 'Categoría'];
-    const data = products.map(p => [p.nombre, `$${p.precio}`, p.categorias?.nombre || 'General']);
-    exportToPDF('Menú de Productos', cols, data);
+  const handleExportPDF = async () => {
+    try {
+      if (isInventoryTab === 'products') {
+        const cols = ['Nombre', 'Precio', 'Categoría'];
+        const data = products.map(p => [p.nombre, `$${p.precio}`, p.categorias?.nombre || 'General']);
+        exportToPDF('Catálogo de Productos', cols, data);
+      } else {
+        const orders = await getOrders();
+        const cols = ['ID', 'Mesa', 'Mesero', 'Total', 'Estado', 'Fecha'];
+        const data = orders.map(o => [
+          o.id.slice(0, 8).toUpperCase(),
+          o.mesas?.numero || 'N/A',
+          o.usuarios?.nombre || 'N/A',
+          `$${o.total}`,
+          o.estado.toUpperCase(),
+          new Date(o.created_at).toLocaleString()
+        ]);
+        exportToPDF('Reporte de Ventas', cols, data);
+      }
+    } catch (e) {
+      alert('Error al generar PDF');
+    }
   };
 
-  const handleExportExcel = () => {
-    const data = products.map(p => ({
-      Nombre: p.nombre,
-      Precio: p.precio,
-      Categoria: p.categorias?.nombre || 'General'
-    }));
-    exportToExcel('Inventario_Restaurante', data);
+  const handleExportExcel = async () => {
+    try {
+      if (isInventoryTab === 'stock') {
+        const data = inventory.map(inv => ({
+          Producto: inv.productos?.nombre,
+          'Stock Actual': inv.stock_actual,
+          'Stock Minimo': inv.stock_minimo,
+          Categoria: inv.productos?.categorias?.nombre
+        }));
+        exportToExcel('Reporte_Inventario', data);
+      } else {
+        const orders = await getOrders();
+        const data = orders.map(o => ({
+          ID: o.id,
+          Mesa: o.mesas?.numero,
+          Mesero: o.usuarios?.nombre,
+          Total: o.total,
+          Estado: o.estado,
+          Fecha: new Date(o.created_at).toLocaleString()
+        }));
+        exportToExcel('Reporte_Ventas', data);
+      }
+    } catch (e) {
+      alert('Error al generar Excel');
+    }
   };
 
   const handleQuickStockUpdate = async (id: string, current: number) => {
@@ -105,6 +145,38 @@ export default function ProductAdmin() {
     }
   };
 
+  const loadTables = async () => {
+    try {
+      const data = await getTables();
+      setTables(data || []);
+    } catch (e) {
+      console.error('Error loading tables:', e);
+    }
+  };
+
+  const handleSaveTable = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTable) return;
+    try {
+      await upsertTable(editingTable);
+      await loadTables();
+      setIsTableModalOpen(false);
+      setEditingTable(null);
+    } catch (e) {
+      alert('Error al guardar mesa');
+    }
+  };
+
+  const handleDeleteTable = async (id: string) => {
+    if (confirm('¿Eliminar mesa?')) {
+      try {
+        await deleteTable(id);
+        loadTables();
+      } catch (e) {
+        alert('Error al eliminar mesa');
+      }
+    }
+  };
   const handleDelete = async (id: string) => {
     if (confirm('¿Seguro que deseas eliminar este producto? Esta acción no se puede deshacer.')) {
       try {
@@ -118,7 +190,7 @@ export default function ProductAdmin() {
 
   return (
     <div className="bg-slate-50 min-h-screen flex flex-col">
-      <header className="bg-rose-600 p-8 lg:p-12 flex flex-col md:flex-row justify-between items-start md:items-center text-white gap-6">
+      <header className="bg-rose-600 p-6 lg:p-10 flex flex-col md:flex-row justify-between items-start md:items-center text-white gap-6">
         <div>
           <h1 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none">ADMIN</h1>
           <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-70 mt-2">Control Maestro de Operaciones</p>
@@ -132,12 +204,17 @@ export default function ProductAdmin() {
           </button>
           <button 
             onClick={() => {
-              setEditingProduct({ 
-                nombre: '', 
-                precio: 0, 
-                categoria_id: categories.length > 0 ? categories[0].id : '' 
-              });
-              setIsModalOpen(true);
+              if (isInventoryTab === 'products') {
+                setEditingProduct({ 
+                  nombre: '', 
+                  precio: 0, 
+                  categoria_id: categories.length > 0 ? categories[0].id : '' 
+                });
+                setIsModalOpen(true);
+              } else if (isInventoryTab === 'tables') {
+                setEditingTable({ numero: tables.length + 1, capacidad: 4, estado: 'libre' });
+                setIsTableModalOpen(true);
+              }
             }}
             className="w-full md:w-auto p-4 bg-white text-rose-600 rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-50 transition-all font-black text-[10px] tracking-widest uppercase shadow-xl"
           >
@@ -149,20 +226,26 @@ export default function ProductAdmin() {
       <div className="p-6 lg:p-12 flex-1 overflow-y-auto scrollbar-hide">
         <div className="flex gap-8 mb-12 border-b border-slate-200">
           <button 
-            onClick={() => setIsInventoryTab(false)}
-            className={`text-sm font-black uppercase tracking-[0.2em] pb-4 transition-all relative ${!isInventoryTab ? 'text-rose-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-rose-600' : 'text-slate-400'}`}
+            onClick={() => setIsInventoryTab('products')}
+            className={`text-sm font-black uppercase tracking-[0.2em] pb-4 transition-all relative ${isInventoryTab === 'products' ? 'text-rose-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-rose-600' : 'text-slate-400'}`}
           >
             PRODUCTOS
           </button>
           <button 
-            onClick={() => setIsInventoryTab(true)}
-            className={`text-sm font-black uppercase tracking-[0.2em] pb-4 transition-all relative ${isInventoryTab ? 'text-rose-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-rose-600' : 'text-slate-400'}`}
+            onClick={() => setIsInventoryTab('stock')}
+            className={`text-sm font-black uppercase tracking-[0.2em] pb-4 transition-all relative ${isInventoryTab === 'stock' ? 'text-rose-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-rose-600' : 'text-slate-400'}`}
           >
             STOCK
           </button>
+          <button 
+            onClick={() => setIsInventoryTab('tables')}
+            className={`text-sm font-black uppercase tracking-[0.2em] pb-4 transition-all relative ${isInventoryTab === 'tables' ? 'text-rose-600 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-rose-600' : 'text-slate-400'}`}
+          >
+            MESAS
+          </button>
         </div>
 
-      {!isInventoryTab ? (
+      {isInventoryTab === 'products' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {products.map((p) => (
             <motion.div 
@@ -212,7 +295,9 @@ export default function ProductAdmin() {
             </motion.div>
           ))}
         </div>
-      ) : (
+      )}
+
+      {isInventoryTab === 'stock' && (
         <div className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -249,6 +334,30 @@ export default function ProductAdmin() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {isInventoryTab === 'tables' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {tables.map(t => (
+            <div key={t.id} className="bg-white p-6 border-2 border-slate-100 rounded-none shadow-sm hover:shadow-xl transition-all group">
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 bg-slate-900 text-white flex items-center justify-center italic font-black text-2xl">
+                  {t.numero}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => { setEditingTable(t); setIsTableModalOpen(true); }} className="text-slate-400 hover:text-rose-600"><Edit2 className="w-4 h-4" /></button>
+                  <button onClick={() => handleDeleteTable(t.id)} className="text-slate-400 hover:text-rose-600"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Capacidad: {t.capacidad} pax</p>
+              <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 ${t.estado === 'libre' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  {t.estado}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       )}
       </div>
@@ -351,6 +460,59 @@ export default function ProductAdmin() {
                     className="flex-1 py-3.5 bg-rose-600 text-white hover:bg-black rounded-lg font-black uppercase text-[10px] tracking-widest shadow-lg shadow-rose-200 transition-all"
                   >
                     Actualizar Item
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isTableModalOpen && editingTable && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsTableModalOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="relative bg-white w-full max-w-sm shadow-2xl overflow-hidden border border-slate-100"
+            >
+              <div className="bg-slate-50 border-b border-slate-100 px-8 py-6 flex justify-between items-center">
+                <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 italic">Mesa {editingTable.numero}</h3>
+                <button onClick={() => setIsTableModalOpen(false)} className="text-slate-400 hover:text-rose-600"><X className="w-5 h-5" /></button>
+              </div>
+              
+              <form onSubmit={handleSaveTable} className="p-8 space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Número de Mesa</label>
+                  <input 
+                    type="number"
+                    required
+                    value={editingTable.numero}
+                    onChange={(e) => setEditingTable({ ...editingTable, numero: parseInt(e.target.value) })}
+                    className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold focus:border-rose-600 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Capacidad (Personas)</label>
+                  <input 
+                    type="number"
+                    required
+                    value={editingTable.capacidad}
+                    onChange={(e) => setEditingTable({ ...editingTable, capacidad: parseInt(e.target.value) })}
+                    className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold focus:border-rose-600 outline-none"
+                  />
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <button type="submit" className="flex-1 py-3.5 bg-rose-600 text-white hover:bg-black rounded-lg font-black uppercase text-[10px] tracking-widest shadow-lg transition-all">
+                    Guardar Mesa
                   </button>
                 </div>
               </form>

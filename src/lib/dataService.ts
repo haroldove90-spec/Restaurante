@@ -1,11 +1,56 @@
 import { supabase } from '../lib/supabase';
 
+export const getCategories = async () => {
+  const { data, error } = await supabase
+    .from('categorias')
+    .select('*')
+    .order('nombre');
+  if (error) throw error;
+  return data;
+};
+
 export const getInventory = async () => {
   const { data, error } = await supabase
     .from('inventario')
     .select('*, productos(*)');
   if (error) throw error;
   return data;
+};
+
+export const getOrders = async () => {
+  const { data, error } = await supabase
+    .from('ordenes')
+    .select(`
+      *,
+      mesas (numero),
+      usuarios (nombre),
+      detalles_orden (*, productos(nombre))
+    `)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+};
+
+export const getAdminStats = async () => {
+  const { data: sales, error: salesError } = await supabase
+    .from('ordenes')
+    .select('total, estado, created_at');
+  
+  const { data: stock, error: stockError } = await supabase
+    .from('inventario')
+    .select('stock_actual, stock_minimo, productos(nombre)')
+    .lt('stock_actual', supabase.from('inventario').select('stock_minimo'));
+
+  if (salesError || stockError) throw (salesError || stockError);
+
+  const totalRevenue = sales?.filter(o => o.estado === 'pagado').reduce((sum, o) => sum + Number(o.total), 0) || 0;
+  const activeOrders = sales?.filter(o => o.estado !== 'pagado' && o.estado !== 'cancelado').length || 0;
+  
+  return {
+    totalRevenue,
+    activeOrders,
+    criticalStock: stock || []
+  };
 };
 
 export const updateStock = async (id: string, nuevoStock: number) => {
@@ -17,31 +62,66 @@ export const updateStock = async (id: string, nuevoStock: number) => {
   return data;
 };
 
-export const getProducts = async () => {
+export const getTables = async () => {
   const { data, error } = await supabase
-    .from('productos')
-    .select('*, categorias(*)');
+    .from('mesas')
+    .select('*')
+    .order('numero');
   if (error) throw error;
   return data;
 };
 
-export const getCategories = async () => {
+export const upsertTable = async (table: any) => {
   const { data, error } = await supabase
-    .from('categorias')
-    .select('*')
+    .from('mesas')
+    .upsert(table)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteTable = async (id: string) => {
+  const { error } = await supabase
+    .from('mesas')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+};
+
+export const getProducts = async () => {
+  const { data, error } = await supabase
+    .from('productos')
+    .select(`
+      *,
+      categorias (nombre),
+      inventario (stock_actual)
+    `)
     .order('nombre');
   if (error) throw error;
   return data;
 };
 
 export const upsertProduct = async (product: any) => {
-  // Eliminar objetos anidados antes de guardar
-  const { categorias, ...cleanProduct } = product;
+  // Eliminar campos relacionados que no se deben enviar al upsert
+  const { categorias, inventario, ...cleanProduct } = product;
   
   const { data, error } = await supabase
     .from('productos')
-    .upsert(cleanProduct);
+    .upsert(cleanProduct)
+    .select()
+    .single();
   if (error) throw error;
+
+  // Si no hay registro de inventario, crearlo
+  if (data && !product.inventario) {
+    await supabase.from('inventario').upsert({
+      producto_id: data.id,
+      stock_actual: 0,
+      stock_minimo: 5
+    });
+  }
+
   return data;
 };
 

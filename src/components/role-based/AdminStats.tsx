@@ -30,30 +30,66 @@ const CHART_DATA = [
   { name: '22:00', sales: 1100 },
 ];
 
+import { getAdminStats, getOrders } from '../../lib/dataService';
+import { useState, useEffect } from 'react';
+
 export default function AdminStats() {
-  const handleExportPDF = () => {
-    const headers = [['Módulo', 'Valor', 'Tendencia']];
-    const data = [
-      ['Ingresos de Hoy', '$2,450.00', '+14%'],
-      ['Órdenes Activas', '18', '+3'],
-      ['Satisfacción', '98%', '+0.5%'],
-      ['Plato Estrella', 'Hambur. Pro', '48 platos'],
-    ];
-    exportToPDF('Reporte General Administrativo', headers, data, 'admin_report_restaurant_pro');
+  const [stats, setStats] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  async function loadStats() {
+    try {
+      const data = await getAdminStats();
+      setStats(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleExportPDF = async () => {
+    try {
+      const orders = await getOrders();
+      const headers = ['ID', 'Mesa', 'Total', 'Estado', 'Fecha'];
+      const data = orders.map(o => [
+        o.id.slice(0, 8).toUpperCase(),
+        o.mesas?.numero || 'N/A',
+        `$${o.total}`,
+        o.estado.toUpperCase(),
+        new Date(o.created_at).toLocaleString()
+      ]);
+      exportToPDF('Reporte Maestro de Ventas', headers, data);
+    } catch (e) {
+      alert('Error exportando PDF');
+    }
   };
 
-  const handleExportExcel = () => {
-    const data = [
-      { Modulo: 'Ingresos de Hoy', Valor: '$2,450.00', Cambio: '+14%' },
-      { Modulo: 'Órdenes Activas', Valor: '18', Cambio: '+3' },
-      { Modulo: 'Satisfacción', Valor: '98%', Cambio: '+0.5%' },
-    ];
-    exportToExcel(data, 'admin_data_restaurant_pro');
+  const handleExportExcel = async () => {
+    try {
+      const orders = await getOrders();
+      const data = orders.map(o => ({
+        ID: o.id,
+        Mesa: o.mesas?.numero,
+        Total: o.total,
+        Estado: o.estado,
+        Fecha: new Date(o.created_at).toLocaleString()
+      }));
+      exportToExcel('Reporte_Ventas_Completo', data);
+    } catch (e) {
+      alert('Error exportando Excel');
+    }
   };
+
+  if (isLoading) return <div className="p-12 text-center font-black animate-pulse">CARGANDO INTELIGENCIA...</div>;
 
   return (
     <div className="bg-slate-50 min-h-screen flex flex-col">
-      <header className="bg-rose-600 p-8 lg:p-12 flex justify-between items-center text-white shrink-0">
+      <header className="bg-rose-600 p-6 lg:p-10 flex justify-between items-center text-white shrink-0">
         <div>
           <h1 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none">ANÁLISIS</h1>
           <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-70 mt-2">Inteligencia de Negocio v2.0</p>
@@ -76,8 +112,8 @@ export default function AdminStats() {
 
       <div className="p-8 lg:p-12 space-y-12 overflow-y-auto scrollbar-hide">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <StatCard label="Ingresos de Hoy" value="$2,450.00" change="+14%" icon={<DollarSign />} color="rose" />
-          <StatCard label="Órdenes Activas" value="18" change="+3" icon={<ShoppingBag />} color="black" />
+          <StatCard label="Ingresos de Hoy" value={`$${stats?.totalRevenue.toFixed(2)}`} change="+14%" icon={<DollarSign />} color="rose" />
+          <StatCard label="Órdenes Activas" value={stats?.activeOrders} change="+3" icon={<ShoppingBag />} color="black" />
           <StatCard label="Satisfacción" value="98%" change="+0.5%" icon={<TrendingUp />} color="rose" />
         </div>
 
@@ -106,14 +142,13 @@ export default function AdminStats() {
               <div className="bg-white border-4 border-rose-600 rounded-[3rem] p-10 shadow-xl">
                  <h4 className="text-rose-600 text-xs font-black uppercase tracking-widest mb-6">STOCK CRÍTICO</h4>
                  <ul className="space-y-4">
-                    <li className="flex justify-between items-end border-b border-rose-50 pb-2">
-                       <span className="font-black text-slate-900 uppercase italic">Carne de Cerdo</span> 
-                       <span className="text-rose-600 font-black text-xl italic">2.5kg</span>
-                    </li>
-                    <li className="flex justify-between items-end border-b border-rose-50 pb-2">
-                       <span className="font-black text-slate-900 uppercase italic">Margarita Mix</span> 
-                       <span className="text-rose-600 font-black text-xl italic">2 uds</span>
-                    </li>
+                    {stats?.criticalStock.map((item: any, i: number) => (
+                      <li key={i} className="flex justify-between items-end border-b border-rose-50 pb-2">
+                        <span className="font-black text-slate-900 uppercase italic leading-none">{item.productos?.nombre}</span> 
+                        <span className="text-rose-600 font-black text-xl italic leading-none">{item.stock_actual} uds</span>
+                      </li>
+                    ))}
+                    {stats?.criticalStock.length === 0 && <p className="text-[10px] font-black uppercase text-slate-400">Todo el stock está saludable</p>}
                  </ul>
               </div>
            </div>
