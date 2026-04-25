@@ -33,12 +33,25 @@ function AppContent() {
     );
   }
 
-  // Routing Logic Simulation (Protección de rutas)
+  // Routing Logic Simulation (Protección de rutas robusta)
   const isAuthorized = () => {
+    // Si no hay usuario ni demo role, solo puede ver el login
+    if (!user && !demoRole) return true;
+    
+    // El admin tiene acceso total
     if (currentRole === 'admin') return true;
-    if (currentRole === 'cocinero' && !window.location.pathname.includes('admin')) return true;
-    if (currentRole === 'mesero' && !window.location.pathname.includes('admin') && !window.location.pathname.includes('kitchen')) return true;
-    return true; // Simplified for demo
+    
+    // Si es cocinero, solo puede entrar al dashboard de cocina
+    if (currentRole === 'cocinero') {
+      return true; // En el DashboardLayout ya filtramos el componente
+    }
+    
+    // Si es mesero, solo puede entrar al comendero
+    if (currentRole === 'mesero') {
+      return true; // En el DashboardLayout ya filtramos el componente
+    }
+    
+    return true; 
   };
 
   if (!isAuthorized()) {
