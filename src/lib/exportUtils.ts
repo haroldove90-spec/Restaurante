@@ -6,27 +6,31 @@ export const exportToPDF = (title: string, columns: string[], data: any[]) => {
   const doc = new jsPDF() as any;
 
   // Header Style
-  doc.setFillColor(15, 23, 42); // slate-900
+  doc.setFillColor(0, 0, 0); // black
   doc.rect(0, 0, 210, 40, 'F');
+
+  // Red Accent Line
+  doc.setFillColor(225, 29, 72); // rose-600
+  doc.rect(0, 40, 210, 2, 'F');
   
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(24);
+  doc.setFontSize(32);
   doc.setFont('helvetica', 'bold');
-  doc.text('RESTAURANT PRO', 105, 20, { align: 'center' });
+  doc.text('JUSHI', 105, 22, { align: 'center', charSpace: 2 });
   
-  doc.setFontSize(10);
-  doc.setTextColor(150, 150, 150);
-  doc.text(title.toUpperCase(), 105, 30, { align: 'center' });
+  doc.setFontSize(8);
+  doc.setTextColor(225, 29, 72);
+  doc.text('SYSTEM PRO OPERATIONAL REPORT', 105, 32, { align: 'center' });
 
   // Table
   doc.autoTable({
     startY: 50,
     head: [columns],
     body: data,
-    theme: 'striped',
-    headStyles: { fillColor: [79, 70, 229], fontSize: 10, fontStyle: 'bold' }, // indigo-600
-    styles: { fontSize: 9, cellPadding: 4 },
-    alternateRowStyles: { fillColor: [248, 250, 252] }
+    theme: 'grid',
+    headStyles: { fillColor: [225, 29, 72], fontSize: 10, fontStyle: 'bold', textColor: [255, 255, 255] },
+    styles: { fontSize: 8, cellPadding: 4, font: 'helvetica' },
+    alternateRowStyles: { fillColor: [250, 250, 250] }
   });
 
   doc.save(`${title.toLowerCase().replace(/\s/g, '_')}_${new Date().getTime()}.pdf`);

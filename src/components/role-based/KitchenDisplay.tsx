@@ -44,8 +44,8 @@ export default function KitchenDisplay() {
   };
 
   return (
-    <div className="bg-black min-h-screen flex flex-col">
-      <header className="bg-rose-600 p-8 lg:p-12 flex justify-between items-center text-white shrink-0">
+    <div className="bg-slate-50 min-h-screen flex flex-col">
+      <header className="bg-rose-600 p-8 lg:p-12 flex justify-between items-center text-white shrink-0 shadow-lg">
         <div>
           <div className="flex items-center gap-4">
             <Flame className="w-10 h-10 animate-pulse" />

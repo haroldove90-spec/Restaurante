@@ -139,37 +139,46 @@ export default function ProductAdmin() {
             <motion.div 
               layout
               key={p.id}
-              className="bg-slate-900 border border-slate-800 p-6 rounded-[2rem] hover:border-slate-700 transition-all group"
+              className="bg-white border-2 border-slate-100 p-8 rounded-none hover:border-rose-600 transition-all group relative overflow-hidden shadow-sm hover:shadow-xl"
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500">
-                  <Package className="w-5 h-5 lg:w-6 lg:h-6" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-rose-600/5 rounded-bl-full transform translate-x-12 -translate-y-12 transition-transform group-hover:scale-150" />
+              
+              <div className="flex justify-between items-start mb-6 relative z-10">
+                <div className="w-14 h-14 bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-200">
+                  <Package className="w-7 h-7" />
                 </div>
-                <div className="flex gap-2 lg:opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-2 lg:opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
                   <button 
                     onClick={() => {
                       setEditingProduct(p);
                       setIsModalOpen(true);
                     }}
-                    className="p-2.5 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+                    className="w-10 h-10 bg-black text-white flex items-center justify-center hover:bg-rose-600 transition-colors shadow-lg"
                   >
-                    <Edit2 className="w-4 h-4 text-amber-500" />
+                    <Edit2 className="w-5 h-5" />
                   </button>
                   <button 
                     onClick={() => handleDelete(p.id)}
-                    className="p-2.5 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors"
+                    className="w-10 h-10 bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors"
                   >
-                    <Trash2 className="w-4 h-4 text-rose-500" />
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               </div>
-              <h3 className="text-lg lg:text-xl font-black uppercase tracking-tight mb-1">{p.nombre}</h3>
-              <p className="text-slate-500 text-xs lg:text-sm mb-4 line-clamp-2 h-8 lg:h-10">{p.descripcion || 'Sin descripción'}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-xl lg:text-2xl font-black text-emerald-500">${p.precio}</span>
-                <span className="bg-slate-800 px-3 py-1 rounded-full text-[9px] lg:text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                  {p.categorias?.nombre || 'General'}
-                </span>
+              
+              <div className="relative z-10">
+                <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-2 text-slate-950 leading-none">{p.nombre}</h3>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6 line-clamp-2 h-10 leading-relaxed">{p.descripcion || 'Sin descripción técnica disponible'}</p>
+                
+                <div className="flex justify-between items-end border-t border-slate-50 pt-6 mt-4">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Precio Unitario</span>
+                    <span className="text-3xl font-black text-rose-600 italic tracking-tighter leading-none">${p.precio}</span>
+                  </div>
+                  <span className="bg-slate-950 text-white px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] italic">
+                    {p.categorias?.nombre || 'General'}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -229,56 +238,84 @@ export default function ProductAdmin() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-slate-900 w-full max-w-lg rounded-[2rem] lg:rounded-[2.5rem] p-6 lg:p-10 border border-slate-800 shadow-2xl overflow-y-auto max-h-[90vh]"
+              className="relative bg-white w-full max-w-xl rounded-none p-12 border-t-[12px] border-rose-600 shadow-[0_0_100px_rgba(0,0,0,0.3)] overflow-y-auto max-h-[90vh]"
             >
-              <div className="flex justify-between items-center mb-8">
-                <h3 className="text-xl lg:text-2xl font-black uppercase italic tracking-tighter">Editar Producto</h3>
-                <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-500 lg:hidden">
+              <div className="flex justify-between items-center mb-10">
+                <div>
+                  <h3 className="text-4xl lg:text-5xl font-black uppercase italic tracking-tighter leading-none text-slate-950">PRODUCTO</h3>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-2">Configuración Técnica de Ítem</p>
+                </div>
+                <button 
+                  onClick={() => setIsModalOpen(false)} 
+                  className="w-12 h-12 bg-slate-100 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all transform hover:rotate-90"
+                >
                    <X className="w-6 h-6" />
                 </button>
               </div>
-              <form onSubmit={handleSave} className="space-y-6">
-                <div>
-                  <label className="block text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Nombre</label>
-                  <input 
-                    required
-                    value={editingProduct.nombre}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, nombre: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm focus:border-indigo-500 outline-none transition-all"
-                  />
+              
+              <form onSubmit={handleSave} className="space-y-10">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Denominación</label>
+                    <input 
+                      required
+                      value={editingProduct.nombre}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, nombre: e.target.value })}
+                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 text-lg font-black uppercase tracking-tight focus:border-rose-600 outline-none transition-all placeholder:text-slate-300"
+                      placeholder="Nombre del Producto"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Valor Mercadeo</label>
+                      <div className="relative">
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-rose-600">$</span>
+                        <input 
+                          type="number"
+                          step="0.01"
+                          required
+                          value={editingProduct.precio}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, precio: parseFloat(e.target.value) })}
+                          className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 pl-10 text-xl font-black italic tracking-tighter focus:border-rose-600 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Categoría ID</label>
+                      <select className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 text-sm font-black uppercase tracking-widest focus:border-rose-600 outline-none transition-all">
+                        <option>GENERAL</option>
+                        <option>ENTRADAS</option>
+                        <option>PLATOS FUERTES</option>
+                        <option>BEBIDAS</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Atributos / Descripción</label>
+                    <textarea 
+                      value={editingProduct.descripcion || ''}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, descripcion: e.target.value })}
+                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 text-sm font-bold focus:border-rose-600 outline-none transition-all h-32 resize-none"
+                      placeholder="Detalles de preparación e insumos..."
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Precio</label>
-                  <input 
-                    type="number"
-                    step="0.01"
-                    required
-                    value={editingProduct.precio}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, precio: parseFloat(e.target.value) })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm focus:border-indigo-500 outline-none transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Descripción</label>
-                  <textarea 
-                    value={editingProduct.descripcion || ''}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, descripcion: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm focus:border-indigo-500 outline-none transition-all h-24 lg:h-32"
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+
+                <div className="flex gap-4 pt-6">
                   <button 
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="flex-1 py-4 bg-slate-800 rounded-2xl font-black uppercase text-xs order-2 sm:order-1"
+                    className="flex-1 py-5 bg-slate-100 text-slate-400 hover:bg-black hover:text-white rounded-none font-black uppercase text-xs tracking-widest transition-all"
                   >
-                    Cancelar
+                    CANCELAR
                   </button>
                   <button 
                     type="submit"
-                    className="flex-1 py-4 bg-emerald-600 rounded-2xl font-black uppercase text-xs shadow-lg shadow-emerald-500/20 order-1 sm:order-2"
+                    className="flex-1 py-5 bg-rose-600 text-white rounded-none font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-rose-600/20 hover:bg-black transition-all"
                   >
-                    Guardar
+                    GUARDAR CAMBIOS
                   </button>
                 </div>
               </form>

@@ -22,7 +22,7 @@ export default function WaiterDashboard() {
     { id: 1, num: '01', status: 'ready', color: 'bg-emerald-500', label: 'Cuenta Pedida' },
     { id: 2, num: '02', status: 'busy', color: 'bg-rose-600', label: 'Comiendo' },
     { id: 3, num: '03', status: 'free', color: 'bg-slate-100', label: 'Libre' },
-    { id: 4, num: '04', status: 'waiting', color: 'bg-indigo-600', label: 'Esperando' },
+    { id: 4, num: '04', status: 'waiting', color: 'bg-slate-950', label: 'Esperando' },
     { id: 5, num: '05', status: 'free', color: 'bg-slate-100', label: 'Libre' },
     { id: 6, num: '06', status: 'paying', color: 'bg-amber-400', label: 'Pagando' },
   ];

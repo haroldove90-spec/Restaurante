@@ -58,9 +58,9 @@ export default function Sidebar({ role, onSignOut, userName, activeTab, onTabCha
       <aside className={`
         fixed inset-y-0 left-0 z-50 w-72 flex flex-col shrink-0 transition-transform duration-300 lg:relative lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${isDark ? 'bg-black' : 'bg-white'} border-r ${isDark ? 'border-white/5' : 'border-slate-200'}
+        bg-white border-r border-slate-100 shadow-xl
       `}>
-        <div className="bg-rose-600 p-8 flex flex-col justify-end min-h-[160px] text-white overflow-hidden relative">
+        <div className="bg-rose-600 p-8 flex flex-col justify-end min-h-[160px] text-white overflow-hidden relative shadow-md">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl transform translate-x-16 -translate-y-16" />
           <div className="relative">
             <span className="font-black text-4xl tracking-tighter leading-none italic block mb-1">JUSHI</span>

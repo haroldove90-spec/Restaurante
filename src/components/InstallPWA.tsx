@@ -49,29 +49,29 @@ export default function InstallPWA() {
           exit={{ y: 100, opacity: 0 }}
           className="fixed bottom-6 left-6 right-6 z-[100] md:left-auto md:right-8 md:bottom-8 md:w-96"
         >
-          <div className="bg-indigo-600 rounded-3xl p-6 shadow-2xl flex flex-col gap-4 border border-white/20">
+          <div className="bg-black rounded-none p-8 shadow-[0_0_50px_rgba(225,29,72,0.3)] flex flex-col gap-6 border-t-8 border-rose-600">
             <div className="flex justify-between items-start">
-               <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white">
-                    <Smartphone className="w-6 h-6" />
+               <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-rose-600 text-white rounded-none flex items-center justify-center shadow-lg shadow-rose-600/20">
+                    <Smartphone className="w-8 h-8" />
                   </div>
                   <div>
-                    <h4 className="text-white font-black uppercase text-sm tracking-tight">Acceso Rápido</h4>
-                    <p className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest">Instala Restaurant Pro</p>
+                    <h4 className="text-white font-black uppercase text-xl leading-none italic tracking-tighter">APP TERMINAL</h4>
+                    <p className="text-rose-500 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Instalación Local Ready</p>
                   </div>
                </div>
-               <button onClick={() => setShowBanner(false)} className="text-white/60 hover:text-white">
-                  <X className="w-5 h-5" />
+               <button onClick={() => setShowBanner(false)} className="text-white/40 hover:text-white transition-colors">
+                  <X className="w-6 h-6" />
                </button>
             </div>
-            <p className="text-xs text-indigo-50 font-medium leading-relaxed">
-              Trabaja más rápido instalando la app en tu pantalla de inicio. Menos consumo de datos y acceso instantáneo.
+            <p className="text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed">
+              Optimizado para alto rendimiento. Añade JUSHI a tu pantalla de inicio para acceso inmediato al sistema.
             </p>
             <button 
               onClick={handleInstall}
-              className="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
+              className="w-full py-5 bg-rose-600 text-white rounded-none font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-rose-600/30 hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3"
             >
-              <Download className="w-4 h-4" /> Instalar App
+              <Download className="w-5 h-5" /> DESCARGAR AHORA
             </button>
           </div>
         </motion.div>

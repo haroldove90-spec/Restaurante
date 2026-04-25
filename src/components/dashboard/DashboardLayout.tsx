@@ -44,7 +44,7 @@ export default function DashboardLayout({ role, userName, onSignOut }: Dashboard
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-black">
+    <div className="flex h-screen w-full overflow-hidden bg-white">
       <Sidebar 
         role={role} 
         userName={userName} 
