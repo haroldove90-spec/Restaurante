@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import AdminStats from '../role-based/AdminStats';
 import WaiterDashboard from '../role-based/WaiterDashboard';
 import KitchenDisplay from '../role-based/KitchenDisplay';
+import ProductAdmin from '../role-based/ProductAdmin';
 import { UserRole } from '../../types/database';
 
 interface DashboardLayoutProps {
@@ -12,10 +13,17 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ role, userName, onSignOut }: DashboardLayoutProps) {
+  const [activeTab, setActiveTab] = useState(
+    role === 'admin' ? 'dashboard' : (role === 'mesero' ? 'tables' : 'kds')
+  );
+
   const renderDashboard = () => {
+    if (activeTab === 'inventory') return <ProductAdmin />;
+    
     switch (role) {
       case 'admin':
-        return <AdminStats />;
+        return activeTab === 'dashboard' ? <AdminStats /> : 
+               <div className="h-full flex items-center justify-center text-slate-500 uppercase font-black text-xl italic tracking-tighter">Módulo {activeTab} en desarrollo</div>;
       case 'mesero':
         return <WaiterDashboard />;
       case 'cocinero':
@@ -34,7 +42,13 @@ export default function DashboardLayout({ role, userName, onSignOut }: Dashboard
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-slate-900">
-      <Sidebar role={role} userName={userName} onSignOut={onSignOut} />
+      <Sidebar 
+        role={role} 
+        userName={userName} 
+        onSignOut={onSignOut} 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
       <main className="flex-1 overflow-hidden relative shadow-inner">
         {renderDashboard()}
       </main>

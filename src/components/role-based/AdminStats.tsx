@@ -4,11 +4,53 @@ import {
   DollarSign, 
   ShoppingBag, 
   Box,
-  ArrowUpRight
+  ArrowUpRight,
+  FileText,
+  Download
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { exportToPDF, exportToExcel } from '../../lib/exportUtils';
+import { 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip 
+} from 'recharts';
+
+const CHART_DATA = [
+  { name: '10:00', sales: 400 },
+  { name: '12:00', sales: 1200 },
+  { name: '14:00', sales: 900 },
+  { name: '16:00', sales: 600 },
+  { name: '18:00', sales: 1500 },
+  { name: '20:00', sales: 2400 },
+  { name: '22:00', sales: 1100 },
+];
 
 export default function AdminStats() {
+  const handleExportPDF = () => {
+    const headers = [['Módulo', 'Valor', 'Tendencia']];
+    const data = [
+      ['Ingresos de Hoy', '$2,450.00', '+14%'],
+      ['Órdenes Activas', '18', '+3'],
+      ['Satisfacción', '98%', '+0.5%'],
+      ['Plato Estrella', 'Hambur. Pro', '48 platos'],
+    ];
+    exportToPDF('Reporte General Administrativo', headers, data, 'admin_report_restaurant_pro');
+  };
+
+  const handleExportExcel = () => {
+    const data = [
+      { Modulo: 'Ingresos de Hoy', Valor: '$2,450.00', Cambio: '+14%' },
+      { Modulo: 'Órdenes Activas', Valor: '18', Cambio: '+3' },
+      { Modulo: 'Satisfacción', Valor: '98%', Cambio: '+0.5%' },
+    ];
+    exportToExcel(data, 'admin_data_restaurant_pro');
+  };
+
   return (
     <div className="bg-slate-950 min-h-full p-8 text-slate-100 space-y-10 overflow-y-auto">
       <div className="flex justify-between items-end">
@@ -16,9 +58,19 @@ export default function AdminStats() {
           <h1 className="text-3xl font-black tracking-tight text-white uppercase italic">Análisis de Operaciones</h1>
           <p className="text-slate-500 text-sm font-bold uppercase tracking-widest mt-1">Admin Dashboard v1.2</p>
         </div>
-        <div className="bg-slate-900 border border-slate-800 p-2 rounded-2xl flex gap-2">
-           <button className="px-4 py-2 bg-indigo-600 rounded-xl text-xs font-bold uppercase">Hoy</button>
-           <button className="px-4 py-2 text-slate-500 text-xs font-bold uppercase hover:text-white transition-colors">Semana</button>
+        <div className="flex gap-3">
+           <button 
+             onClick={handleExportPDF}
+             className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold uppercase flex items-center gap-2 hover:bg-slate-800 transition-colors"
+           >
+             <FileText className="w-4 h-4 text-rose-500" /> Exportar PDF
+           </button>
+           <button 
+             onClick={handleExportExcel}
+             className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold uppercase flex items-center gap-2 hover:bg-slate-800 transition-colors"
+           >
+             <Download className="w-4 h-4 text-emerald-500" /> Exportar Excel
+           </button>
         </div>
       </div>
 

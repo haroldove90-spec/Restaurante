@@ -15,9 +15,11 @@ interface SidebarProps {
   role: UserRole;
   onSignOut: () => void;
   userName: string;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 }
 
-export default function Sidebar({ role, onSignOut, userName }: SidebarProps) {
+export default function Sidebar({ role, onSignOut, userName, activeTab, onTabChange }: SidebarProps) {
   const isDark = role === 'admin';
 
   const menuItems = {
@@ -57,13 +59,18 @@ export default function Sidebar({ role, onSignOut, userName }: SidebarProps) {
         {currentItems.map((item) => (
           <button
             key={item.id}
+            onClick={() => onTabChange(item.id)}
             className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold uppercase text-[11px] tracking-widest transition-all group ${
-              isDark 
-                ? 'text-slate-400 hover:bg-slate-900 hover:text-white' 
-                : 'text-slate-500 hover:bg-slate-50 hover:text-indigo-600'
+              activeTab === item.id
+                ? (isDark ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-600')
+                : (isDark ? 'text-slate-400 hover:bg-slate-900 hover:text-white' : 'text-slate-500 hover:bg-slate-50 hover:text-indigo-600')
             }`}
           >
-            <div className={`transition-transform group-hover:scale-110 ${isDark ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-600'}`}>
+            <div className={`transition-transform group-hover:scale-110 ${
+              activeTab === item.id 
+                ? 'text-white' 
+                : (isDark ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-600')
+            }`}>
               {item.icon}
             </div>
             {item.label}

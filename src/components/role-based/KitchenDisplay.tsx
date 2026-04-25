@@ -4,7 +4,8 @@ import {
   Timer, 
   Flame, 
   ChevronRight,
-  ClipboardList
+  ClipboardList,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -24,8 +25,13 @@ export default function KitchenDisplay() {
       <div className="flex items-center gap-4 bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
         <Flame className="w-8 h-8 text-rose-500" />
         <h1 className="text-3xl font-black uppercase italic tracking-tighter">Sistema de Cocina (KDS)</h1>
-        <div className="ml-auto bg-slate-800 px-4 py-2 rounded-xl text-amber-500 font-bold border border-amber-500/20">
-           {tickets.length} PEDIDOS ACTIVOS
+        <div className="ml-auto flex gap-4">
+          <button className="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all">
+             <Download className="w-4 h-4" /> EFICIENCIA
+          </button>
+          <div className="bg-slate-800 px-4 py-2 rounded-xl text-amber-500 font-bold border border-amber-500/20">
+             {tickets.length} PEDIDOS ACTIVOS
+          </div>
         </div>
       </div>
 
