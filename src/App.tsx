@@ -10,8 +10,8 @@ function AppContent() {
   const [demoRole, setDemoRole] = useState<UserRole | null>(null);
 
   // For the demo/preview, we allow switching roles easily
-  const currentRole = demoRole || profile?.rol || 'mesero';
-  const currentName = profile?.nombre || 'Miembro del Staff';
+  const currentRole = window.location.pathname === '/menu' ? 'cliente' : (demoRole || profile?.rol || 'cliente');
+  const currentName = profile?.nombre || (currentRole === 'cliente' ? 'Invitado Especial' : 'Miembro del Staff');
 
   if (isLoading && !demoRole) {
     return (
@@ -91,7 +91,7 @@ function DemoSwitcher({ setRole, currentRole }: { setRole: (role: UserRole | nul
       <div className="px-3 py-1 flex items-center">
          <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">DEBUGER:</span>
       </div>
-      {(['admin', 'mesero', 'cocinero'] as UserRole[]).map(r => (
+      {(['admin', 'mesero', 'cocinero', 'cliente'] as UserRole[]).map(r => (
         <button
           key={r}
           onClick={() => setRole(r)}

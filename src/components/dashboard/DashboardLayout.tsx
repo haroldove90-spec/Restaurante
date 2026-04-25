@@ -4,6 +4,7 @@ import AdminStats from '../role-based/AdminStats';
 import WaiterDashboard from '../role-based/WaiterDashboard';
 import KitchenDisplay from '../role-based/KitchenDisplay';
 import ProductAdmin from '../role-based/ProductAdmin';
+import CustomerMenu from '../role-based/CustomerMenu';
 import { UserRole } from '../../types/database';
 
 import { Menu, ChevronRight } from 'lucide-react';
@@ -16,7 +17,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ role, userName, onSignOut }: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState(
-    role === 'admin' ? 'dashboard' : (role === 'mesero' ? 'tables' : 'kds')
+    role === 'admin' ? 'dashboard' : (role === 'mesero' ? 'tables' : (role === 'cliente' ? 'menu' : 'kds'))
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -31,6 +32,8 @@ export default function DashboardLayout({ role, userName, onSignOut }: Dashboard
         return <WaiterDashboard />;
       case 'cocinero':
         return <KitchenDisplay />;
+      case 'cliente':
+        return <CustomerMenu />;
       default:
         return (
           <div className="flex-1 flex items-center justify-center bg-slate-50">

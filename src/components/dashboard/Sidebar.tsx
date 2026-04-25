@@ -7,7 +7,8 @@ import {
   Box, 
   Settings, 
   LogOut,
-  UserCircle
+  UserCircle,
+  Star
 } from 'lucide-react';
 import { UserRole } from '../../types/database';
 
@@ -40,6 +41,10 @@ export default function Sidebar({ role, onSignOut, userName, activeTab, onTabCha
     ],
     cajero: [
       { id: 'checkout', label: 'Caja / Pagos', icon: <BarChart3 className="w-5 h-5" /> },
+    ],
+    cliente: [
+      { id: 'menu', label: 'Ver Menú', icon: <UtensilsCrossed className="w-5 h-5" /> },
+      { id: 'offers', label: 'Promociones', icon: <Star className="w-5 h-5" /> },
     ]
   };
 

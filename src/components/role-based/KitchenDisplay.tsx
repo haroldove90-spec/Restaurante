@@ -26,8 +26,8 @@ export default function KitchenDisplay() {
   async function loadTickets() {
     const { data, error } = await supabase
       .from('ordenes')
-      .select('*, mesas(num), detalles_orden(*, productos(nombre))')
-      .in('estado', ['pendiente', 'en_preparacion'])
+      .select('*, mesas(numero), detalles_orden(*, productos(nombre))')
+      .in('estado', ['pendiente', 'preparando'])
       .order('created_at', { ascending: true });
     
     if (error) console.error(error);
@@ -77,7 +77,7 @@ export default function KitchenDisplay() {
               >
                 <div className="bg-slate-950 p-6 lg:p-8 text-white flex justify-between items-start">
                   <div>
-                    <span className="text-5xl lg:text-7xl font-black tracking-tighter italic leading-none">{t.mesas?.num || '??'}</span>
+                    <span className="text-5xl lg:text-7xl font-black tracking-tighter italic leading-none">{t.mesas?.numero || '??'}</span>
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 mt-2">TABLE IDENTIFIER</p>
                   </div>
                   <div className="bg-white/10 px-4 py-2 rounded-xl border border-white/20">
