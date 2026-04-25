@@ -2,38 +2,33 @@
 import { NextResponse } from 'next/server';
 // @ts-ignore
 import type { NextRequest } from 'next/server';
-// Nota: Importar createMiddlewareClient de @supabase/auth-helpers-nextjs o @supabase/ssr según la versión de Next.js
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  
-  // 1. Verificar sesión (Lógica simplificada para el blueprint)
-  // const supabase = createMiddlewareClient({ req, res });
-  // const { data: { session } } = await supabase.auth.getSession();
-  const session = null; // Simular falta de sesión
+/**
+ * Middleware compatible con Vercel Edge Runtime.
+ * Evita importar librerías pesadas. Solo lógica de tokens y rutas.
+ */
+export function middleware(request: NextRequest) {
+  // En una app real, Supabase guarda la sesión en una cookie llamada 'sb-access-token'
+  const session = request.cookies.get('sb-access-token');
+  const { pathname } = request.nextUrl;
 
-  const { pathname } = req.nextUrl;
-
-  // 2. Proteger rutas principales
-  if (!session && (pathname.startsWith('/waiter') || pathname.startsWith('/kitchen') || pathname.startsWith('/admin'))) {
-    const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = '/login';
-    return NextResponse.redirect(redirectUrl);
+  // 1. Protección de rutas: Si no hay sesión, al login
+  if (!session && pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 3. Control de acceso por rol
-  // const role = session?.user?.user_metadata?.role;
-  const role = 'cocinero'; // Simulación para el ejemplo solicitado
+  // 2. Control granular (Ejem: Admin)
+  // Nota: En Edge, solemos leer el rol desde una cookie personalizada 'user-role' 
+  // seteada al hacer login para no consultar la DB en cada request.
+  const role = request.cookies.get('user-role')?.value;
 
-  if (role === 'cocinero' && pathname.startsWith('/admin/ventas')) {
-    const unauthorizedUrl = req.nextUrl.clone();
-    unauthorizedUrl.pathname = '/unauthorized';
-    return NextResponse.redirect(unauthorizedUrl);
+  if (role === 'cocinero' && pathname.includes('/admin')) {
+    return NextResponse.redirect(new URL('/dashboard/kitchen', request.url));
   }
 
-  return res;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/dashboard/:path*', '/admin/:path*'],
 };
