@@ -14,7 +14,7 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -22,7 +22,12 @@ export default function LoginPage() {
     if (error) {
       setError('Credenciales incorrectas o error de conexión.');
       setLoading(false);
+      return;
     }
+
+    // Redirección basada en rol (Simulada para el demo activo en App.tsx)
+    // En una app real de Next.js se usaría useRouter()
+    console.log('Login exitoso, redirigiendo según rol...');
   };
 
   return (

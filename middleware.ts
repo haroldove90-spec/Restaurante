@@ -18,12 +18,14 @@ export function middleware(request: NextRequest) {
   }
 
   // 2. Control granular (Ejem: Admin)
-  // Nota: En Edge, solemos leer el rol desde una cookie personalizada 'user-role' 
-  // seteada al hacer login para no consultar la DB en cada request.
   const role = request.cookies.get('user-role')?.value;
 
-  if (role === 'cocinero' && pathname.includes('/admin')) {
+  if (role === 'cocinero' && (pathname.includes('/admin') || pathname.includes('/waiter'))) {
     return NextResponse.redirect(new URL('/dashboard/kitchen', request.url));
+  }
+
+  if (role === 'mesero' && (pathname.includes('/admin') || pathname.includes('/kitchen'))) {
+    return NextResponse.redirect(new URL('/dashboard/waiter', request.url));
   }
 
   return NextResponse.next();

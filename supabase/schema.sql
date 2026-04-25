@@ -37,6 +37,24 @@ CREATE TABLE detalles_orden (
   precio_unitario NUMERIC(10,2) NOT NULL
 );
 
+-- SEED DATA (CONCEPTUAL)
+-- Nota: La inserción en auth.users se hace vía Dashboard o API, 
+-- pero aquí definimos los perfiles vinculados por ID.
+
+/*
+-- Insertar Roles
+INSERT INTO roles (id, nombre) VALUES 
+  (uuid_generate_v4(), 'admin'),
+  (uuid_generate_v4(), 'mesero'),
+  (uuid_generate_v4(), 'cocinero'),
+  (uuid_generate_v4(), 'cajero');
+
+-- Insertar Usuarios de Prueba (Asumiendo IDs generados)
+-- Admin: admin@cossma.com.mx
+-- Mesero: mesero@cossma.com.mx
+-- Cocinero: cocinero@cossma.com.mx
+*/
+
 -- POLÍTICAS RLS (Seguridad)
 ALTER TABLE ordenes ENABLE ROW LEVEL SECURITY;
 

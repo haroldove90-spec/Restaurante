@@ -33,6 +33,22 @@ function AppContent() {
     );
   }
 
+  // Routing Logic Simulation (Protección de rutas)
+  const isAuthorized = () => {
+    if (currentRole === 'admin') return true;
+    if (currentRole === 'cocinero' && !window.location.pathname.includes('admin')) return true;
+    if (currentRole === 'mesero' && !window.location.pathname.includes('admin') && !window.location.pathname.includes('kitchen')) return true;
+    return true; // Simplified for demo
+  };
+
+  if (!isAuthorized()) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-slate-900 text-white">
+        <p className="font-black uppercase tracking-tighter text-xl">Acceso No Autorizado - Redirigiendo...</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <DemoSwitcher setRole={setDemoRole} currentRole={currentRole} />
