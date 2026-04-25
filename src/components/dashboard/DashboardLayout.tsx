@@ -44,7 +44,7 @@ export default function DashboardLayout({ role, userName, onSignOut }: Dashboard
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-slate-900">
+    <div className="flex h-screen w-full overflow-hidden bg-black">
       <Sidebar 
         role={role} 
         userName={userName} 
@@ -56,24 +56,24 @@ export default function DashboardLayout({ role, userName, onSignOut }: Dashboard
       />
       
       <main className="flex-1 overflow-hidden relative shadow-inner flex flex-col">
-        {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 text-white">
-          <div className="flex items-center gap-3">
+        {/* Mobile Header (Jushi Style) */}
+        <div className="lg:hidden flex items-center justify-between p-6 bg-rose-600 text-white">
+          <div className="flex items-center gap-4">
             <button 
               onClick={() => setSidebarOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-xl"
+              className="p-2 hover:bg-black/10 rounded-xl transition-colors"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-8 h-8" />
             </button>
-            <span className="font-black uppercase tracking-tighter text-sm italic">Restaurant Pro</span>
+            <span className="font-black uppercase tracking-tighter text-2xl italic leading-none">JUSHI</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
-            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-            <span className="text-[10px] font-black uppercase text-indigo-400">{activeTab}</span>
+          <div className="flex items-center gap-2 px-4 py-1.5 bg-black/20 rounded-full border border-white/20">
+            <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest">{activeTab}</span>
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden relative">
+        <div className="flex-1 overflow-hidden relative bg-white">
           {renderDashboard()}
         </div>
       </main>

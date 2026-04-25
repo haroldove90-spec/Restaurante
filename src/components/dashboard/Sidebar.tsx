@@ -58,23 +58,24 @@ export default function Sidebar({ role, onSignOut, userName, activeTab, onTabCha
       <aside className={`
         fixed inset-y-0 left-0 z-50 w-72 flex flex-col shrink-0 transition-transform duration-300 lg:relative lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${isDark ? 'bg-slate-950' : 'bg-white'} border-r border-slate-200
+        ${isDark ? 'bg-black' : 'bg-white'} border-r ${isDark ? 'border-white/5' : 'border-slate-200'}
       `}>
-        <div className="bg-rose-600 p-6 flex justify-between items-center text-white">
-          <div className="flex flex-col">
-            <span className="font-black text-2xl tracking-tighter leading-none italic">JUSHI</span>
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-80 mt-1">Restaurant Pro</span>
+        <div className="bg-rose-600 p-8 flex flex-col justify-end min-h-[160px] text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl transform translate-x-16 -translate-y-16" />
+          <div className="relative">
+            <span className="font-black text-4xl tracking-tighter leading-none italic block mb-1">JUSHI</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-80">SYSTEM PRO</span>
           </div>
-          <button onClick={onClose} className="lg:hidden p-2">
+          <button onClick={onClose} className="lg:hidden absolute top-4 right-4 p-2 bg-black/20 rounded-full">
             <LogOut className="w-5 h-5 rotate-180" />
           </button>
         </div>
 
         <div className="p-8 flex-1 flex flex-col">
-          <div className="mb-8">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Terminal</p>
-            <div className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border ${isDark ? 'bg-slate-900 border-slate-800 text-rose-500' : 'bg-slate-50 border-slate-100 text-slate-600'}`}>
-               {role} active session
+          <div className="mb-10">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">CONSOLA OPERATIVA</p>
+            <div className={`px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest border-2 ${isDark ? 'bg-slate-900 border-rose-600/30 text-rose-500 shadow-lg shadow-rose-600/10' : 'bg-slate-50 border-slate-100 text-slate-600'}`}>
+               {role} session
             </div>
           </div>
 

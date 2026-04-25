@@ -216,26 +216,26 @@ export default function OrderFlow({ table, onBack, onSuccess }: OrderFlowProps) 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl"
+              className="relative bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl"
             >
-              <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-8 h-8" />
+              <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-8">
+                <CheckCircle2 className="w-10 h-10" />
               </div>
-              <h3 className="text-xl font-black uppercase italic mb-2 tracking-tighter">¿Confirmar comanda?</h3>
-              <p className="text-slate-500 text-sm font-medium mb-8">La orden se enviará inmediatamente al sistema de cocina.</p>
+              <h3 className="text-2xl font-black uppercase italic mb-2 tracking-tighter">¿CONFIRMAR COMANDA?</h3>
+              <p className="text-slate-500 text-sm font-medium mb-10">La orden se enviará inmediatamente al sistema de producción en cocina.</p>
               
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
                 <button 
                   onClick={handleSendToKitchen}
-                  className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-indigo-500/20"
+                  className="w-full py-5 bg-rose-600 text-white rounded-2xl font-black uppercase text-sm tracking-widest shadow-xl shadow-rose-600/20 active:scale-95 transition-all"
                 >
-                  Sí, enviar ahora
+                  SÍ, ENVIAR AHORA
                 </button>
                 <button 
                   onClick={() => setIsConfirming(false)}
-                  className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase text-xs tracking-widest"
+                  className="w-full py-5 bg-slate-100 text-slate-400 hover:text-slate-900 rounded-2xl font-black uppercase text-sm tracking-widest transition-all"
                 >
-                  Corregir orden
+                  CORREGIR ORDEN
                 </button>
               </div>
             </motion.div>

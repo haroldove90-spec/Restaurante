@@ -52,62 +52,72 @@ export default function AdminStats() {
   };
 
   return (
-    <div className="bg-slate-950 min-h-full p-6 lg:p-8 text-slate-100 space-y-8 lg:space-y-10 overflow-y-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-0">
+    <div className="bg-slate-50 min-h-screen flex flex-col">
+      <header className="bg-rose-600 p-8 lg:p-12 flex justify-between items-center text-white shrink-0">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-white uppercase italic">Análisis de Operaciones</h1>
-          <p className="text-slate-500 text-xs lg:text-sm font-bold uppercase tracking-widest mt-1">Admin Dashboard v1.2</p>
+          <h1 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter italic leading-none">ANÁLISIS</h1>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-70 mt-2">Inteligencia de Negocio v2.0</p>
         </div>
-        <div className="flex flex-wrap gap-2 lg:gap-3 w-full sm:w-auto">
+        <div className="hidden sm:flex gap-4">
            <button 
              onClick={handleExportPDF}
-             className="flex-1 sm:flex-none px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-[10px] lg:text-xs font-bold uppercase flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+             className="px-6 py-4 bg-black/20 border border-white/20 rounded-2xl flex items-center justify-center gap-3 hover:bg-black/30 transition-all font-black text-xs tracking-widest uppercase"
            >
-             <FileText className="w-4 h-4 text-rose-500" /> PDF
+             <FileText className="w-5 h-5" /> PDF
            </button>
            <button 
              onClick={handleExportExcel}
-             className="flex-1 sm:flex-none px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-[10px] lg:text-xs font-bold uppercase flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+             className="px-6 py-4 bg-black/20 border border-white/20 rounded-2xl flex items-center justify-center gap-3 hover:bg-black/30 transition-all font-black text-xs tracking-widest uppercase"
            >
-             <Download className="w-4 h-4 text-emerald-500" /> EXCEL
+             <Download className="w-5 h-5" /> EXCEL
            </button>
         </div>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-        <StatCard label="Ingresos de Hoy" value="$2,450.00" change="+14%" icon={<DollarSign />} color="indigo" />
-        <StatCard label="Órdenes Activas" value="18" change="+3" icon={<ShoppingBag />} color="emerald" />
-        <StatCard label="Satisfacción" value="98%" change="+0.5%" icon={<TrendingUp />} color="amber" />
-      </div>
+      <div className="p-8 lg:p-12 space-y-12 overflow-y-auto scrollbar-hide">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <StatCard label="Ingresos de Hoy" value="$2,450.00" change="+14%" icon={<DollarSign />} color="rose" />
+          <StatCard label="Órdenes Activas" value="18" change="+3" icon={<ShoppingBag />} color="black" />
+          <StatCard label="Satisfacción" value="98%" change="+0.5%" icon={<TrendingUp />} color="rose" />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-[2rem] lg:rounded-[2.5rem] p-6 lg:p-10">
-            <h3 className="text-lg lg:text-xl font-black uppercase mb-8 flex items-center gap-3">
-              <Box className="w-6 h-6 text-indigo-500" /> Ocupación del Salón
-            </h3>
-            <div className="space-y-8">
-               <ProgressBar label="Almuerzo" value={85} color="bg-indigo-500" />
-               <ProgressBar label="Cena" value={45} color="bg-emerald-500" />
-               <ProgressBar label="Eventos" value={12} color="bg-slate-700" />
-            </div>
-         </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+           <div className="lg:col-span-8 bg-white border border-slate-100 rounded-[3rem] p-10 shadow-2xl shadow-slate-200/50">
+              <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-10 flex items-center gap-4">
+                <Box className="w-8 h-8 text-rose-600" /> OCUPACIÓN DEL SALÓN
+              </h3>
+              <div className="space-y-10">
+                 <ProgressBar label="Almuerzo" value={85} color="bg-rose-600" />
+                 <ProgressBar label="Cena" value={45} color="bg-slate-950" />
+                 <ProgressBar label="Eventos" value={12} color="bg-slate-200" />
+              </div>
+           </div>
 
-         <div className="lg:col-span-4 space-y-6">
-            <div className="bg-indigo-600 rounded-[2rem] p-6 lg:p-8 text-white relative overflow-hidden group">
-               <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
-               <h4 className="text-base lg:text-lg font-black uppercase italic mb-2">Plato Estrella</h4>
-               <p className="text-3xl lg:text-4xl font-black tracking-tighter">Hambur. Pro</p>
-               <p className="text-indigo-200 text-[10px] mt-2 font-bold uppercase tracking-widest">48 platos hoy</p>
-            </div>
-            
-            <div className="bg-rose-500/10 border border-rose-500/20 rounded-[2rem] p-6 lg:p-8">
-               <h4 className="text-rose-400 text-[10px] font-black uppercase tracking-widest mb-4">Stock Bajo</h4>
-               <ul className="space-y-3">
-                  <li className="flex justify-between text-sm font-bold"><span className="text-slate-300">Carne Res</span> <span className="text-rose-500">2.5kg</span></li>
-                  <li className="flex justify-between text-sm font-bold"><span className="text-slate-300">Cerveza IPA</span> <span className="text-rose-500">5 uds</span></li>
-               </ul>
-            </div>
-         </div>
+           <div className="lg:col-span-4 space-y-8">
+              <div className="bg-black rounded-[3rem] p-10 text-white relative overflow-hidden group shadow-2xl">
+                 <div className="absolute -right-8 -bottom-8 w-48 h-48 bg-rose-600/20 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
+                 <h4 className="text-[10px] uppercase font-black tracking-widest text-white/50 mb-4">PRODUCTO TOP</h4>
+                 <p className="text-4xl lg:text-5xl font-black tracking-tighter italic uppercase leading-none">TACOS AL PASTOR</p>
+                 <div className="mt-8 inline-block bg-rose-600 px-6 py-2 font-black text-xs italic tracking-widest">
+                    64 VENDIDOS HOY
+                 </div>
+              </div>
+              
+              <div className="bg-white border-4 border-rose-600 rounded-[3rem] p-10 shadow-xl">
+                 <h4 className="text-rose-600 text-xs font-black uppercase tracking-widest mb-6">STOCK CRÍTICO</h4>
+                 <ul className="space-y-4">
+                    <li className="flex justify-between items-end border-b border-rose-50 pb-2">
+                       <span className="font-black text-slate-900 uppercase italic">Carne de Cerdo</span> 
+                       <span className="text-rose-600 font-black text-xl italic">2.5kg</span>
+                    </li>
+                    <li className="flex justify-between items-end border-b border-rose-50 pb-2">
+                       <span className="font-black text-slate-900 uppercase italic">Margarita Mix</span> 
+                       <span className="text-rose-600 font-black text-xl italic">2 uds</span>
+                    </li>
+                 </ul>
+              </div>
+           </div>
+        </div>
       </div>
     </div>
   );
@@ -115,15 +125,17 @@ export default function AdminStats() {
 
 function StatCard({ label, value, change, icon, color }: any) {
   return (
-    <motion.div whileHover={{ y: -5 }} className="bg-slate-900 border border-slate-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-      <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-2xl flex items-center justify-center mb-4 lg:mb-6 border border-white/5 ${color === 'indigo' ? 'bg-indigo-500/20 text-indigo-400' : color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-        {icon}
+    <motion.div whileHover={{ y: -10 }} className="bg-white border border-slate-100 p-10 rounded-[3.5rem] shadow-2xl shadow-slate-200/50 relative overflow-hidden group">
+      <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center mb-8 shadow-xl transition-all group-hover:scale-110 ${
+        color === 'black' ? 'bg-black text-white' : 'bg-rose-600 text-white shadow-rose-200'
+      }`}>
+        {React.cloneElement(icon, { size: 32, strokeWidth: 3 })}
       </div>
       <div>
-        <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">{label}</p>
-        <p className="text-2xl lg:text-3xl font-black text-white tracking-tighter">{value}</p>
-        <div className="mt-2 flex items-center gap-1 text-[9px] lg:text-[10px] font-black text-emerald-400">
-           <ArrowUpRight className="w-3 h-3" /> {change} HASTA AHORA
+        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2">{label}</p>
+        <p className="text-5xl font-black text-slate-950 tracking-tighter italic">{value}</p>
+        <div className="mt-4 flex items-center gap-2 text-[11px] font-black text-emerald-500 uppercase italic">
+           <ArrowUpRight className="w-4 h-4" /> {change} CRECIMIENTO
         </div>
       </div>
     </motion.div>
@@ -132,16 +144,16 @@ function StatCard({ label, value, change, icon, color }: any) {
 
 function ProgressBar({ label, value, color }: any) {
   return (
-    <div className="space-y-3">
-      <div className="flex justify-between text-xs font-black uppercase tracking-widest text-slate-400">
+    <div className="space-y-4">
+      <div className="flex justify-between text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
         <span>{label}</span>
-        <span>{value}%</span>
+        <span className="text-slate-900">{value}%</span>
       </div>
-      <div className="h-4 bg-slate-800 rounded-full overflow-hidden p-1 shadow-inner">
+      <div className="h-6 bg-slate-100 rounded-full overflow-hidden p-1.5 shadow-inner">
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: `${value}%` }}
-          className={`h-full rounded-full ${color} shadow-[0_0_15px_rgba(99,102,241,0.4)]`} 
+          className={`h-full rounded-full ${color} shadow-lg shadow-black/5`} 
         />
       </div>
     </div>

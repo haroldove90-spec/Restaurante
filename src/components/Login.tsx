@@ -31,53 +31,54 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden"
+        className="max-w-md w-full bg-white rounded-none shadow-[0_0_100px_rgba(0,0,0,0.1)] border border-slate-200 overflow-hidden"
       >
-        <div className="bg-indigo-600 p-8 text-center text-white">
-          <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-            <Utensils className="w-8 h-8 text-white" />
+        <div className="bg-rose-600 p-12 text-center text-white relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-3xl transform translate-x-12 -translate-y-12" />
+          <div className="w-20 h-20 bg-white text-rose-600 rounded-none flex items-center justify-center mx-auto mb-6 shadow-2xl relative z-10">
+            <Utensils className="w-10 h-10" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Restaurante Pro</h1>
-          <p className="text-indigo-100 text-sm mt-2">Sistema de Gestión Integral</p>
+          <h1 className="text-5xl font-black italic tracking-tighter uppercase leading-none relative z-10">JUSHI</h1>
+          <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.4em] mt-3 relative z-10">Sistema de Gestión Pro</p>
         </div>
         
-        <div className="p-8">
-          <form onSubmit={handleLogin} className="space-y-6">
+        <div className="p-10">
+          <form onSubmit={handleLogin} className="space-y-8">
             {error && (
-              <div className="bg-red-50 border border-red-100 text-red-600 text-sm p-3 rounded-lg flex items-center gap-2">
-                <span className="w-1 h-1 bg-red-600 rounded-full" />
+              <div className="bg-black text-rose-600 text-[10px] font-black uppercase tracking-widest p-4 rounded-none border-l-4 border-rose-600 flex items-center gap-3">
+                <span className="w-2 h-2 bg-rose-600 rounded-full animate-pulse" />
                 {error}
               </div>
             )}
             
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Email del Personal</label>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">Email del Personal</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                 <input 
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
-                  placeholder="ejemplo@restaurantepro.com"
+                  className="w-full pl-12 pr-4 py-5 bg-slate-50 border-2 border-slate-100 rounded-none text-base font-bold focus:border-rose-600 transition-all outline-none"
+                  placeholder="ejemplo@jushi.com.mx"
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Contraseña</label>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">Pin de Seguridad</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                 <input 
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
+                  className="w-full pl-12 pr-4 py-5 bg-slate-50 border-2 border-slate-100 rounded-none text-base font-bold focus:border-rose-600 transition-all outline-none"
                   placeholder="••••••••"
                   required
                 />
@@ -87,21 +88,25 @@ export default function LoginPage() {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2"
+              className="w-full py-6 bg-rose-600 hover:bg-black text-white rounded-none font-black uppercase text-base tracking-[0.2em] shadow-xl shadow-rose-600/20 transition-all flex items-center justify-center gap-3 group"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Iniciar Sesión'}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                <>
+                  <span>ACCEDER AL SISTEMA</span>
+                </>
+              )}
             </button>
 
-            <div className="text-center">
-              <a href="#" className="text-xs text-slate-400 hover:text-indigo-600 transition-colors">¿Olvidaste tu contraseña?</a>
+            <div className="text-center pt-2">
+              <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-rose-600 transition-colors">Solicitar Acceso a IT</a>
             </div>
           </form>
         </div>
 
-        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400 font-medium">
-          <span>v1.2.0 - Seguridad Activada</span>
-          <span className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Supabase Realtime
+        <div className="px-10 py-6 bg-black text-white flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
+          <span className="opacity-40">Terminal v2.0 - AES256</span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-rose-600 rounded-full animate-pulse" /> SYSTEM READY
           </span>
         </div>
       </motion.div>
