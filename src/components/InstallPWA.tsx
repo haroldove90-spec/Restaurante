@@ -56,8 +56,8 @@ export default function InstallPWA() {
                     <Smartphone className="w-8 h-8" />
                   </div>
                   <div>
-                    <h4 className="text-white font-black uppercase text-xl leading-none italic tracking-tighter">APP TERMINAL</h4>
-                    <p className="text-rose-500 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Instalación Local Ready</p>
+                    <h4 className="text-white font-black uppercase text-xl leading-none italic tracking-tighter">REST PRO TERMINAL</h4>
+                    <p className="text-rose-500 text-[10px] font-black uppercase tracking-[0.3em] mt-1">App Lista para Instalar</p>
                   </div>
                </div>
                <button onClick={() => setShowBanner(false)} className="text-white/40 hover:text-white transition-colors">
@@ -65,7 +65,7 @@ export default function InstallPWA() {
                </button>
             </div>
             <p className="text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed">
-              Optimizado para alto rendimiento. Añade JUSHI a tu pantalla de inicio para acceso inmediato al sistema.
+              Optimizado para alto rendimiento. Añade Restaurant Pro a tu pantalla de inicio para acceso inmediato al sistema.
             </p>
             <button 
               onClick={handleInstall}

@@ -42,7 +42,7 @@ export default function LoginPage() {
           <div className="w-20 h-20 bg-white text-rose-600 rounded-none flex items-center justify-center mx-auto mb-6 shadow-2xl relative z-10">
             <Utensils className="w-10 h-10" />
           </div>
-          <h1 className="text-5xl font-black italic tracking-tighter uppercase leading-none relative z-10">JUSHI</h1>
+          <h1 className="text-5xl font-black italic tracking-tighter uppercase leading-none relative z-10">Restaurant Pro</h1>
           <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.4em] mt-3 relative z-10">Sistema de Gestión Pro</p>
         </div>
         

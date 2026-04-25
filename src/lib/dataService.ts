@@ -25,10 +25,22 @@ export const getProducts = async () => {
   return data;
 };
 
+export const getCategories = async () => {
+  const { data, error } = await supabase
+    .from('categorias')
+    .select('*')
+    .order('nombre');
+  if (error) throw error;
+  return data;
+};
+
 export const upsertProduct = async (product: any) => {
+  // Eliminar objetos anidados antes de guardar
+  const { categorias, ...cleanProduct } = product;
+  
   const { data, error } = await supabase
     .from('productos')
-    .upsert(product);
+    .upsert(cleanProduct);
   if (error) throw error;
   return data;
 };

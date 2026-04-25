@@ -65,7 +65,7 @@ export default function DashboardLayout({ role, userName, onSignOut }: Dashboard
             >
               <Menu className="w-8 h-8" />
             </button>
-            <span className="font-black uppercase tracking-tighter text-2xl italic leading-none">JUSHI</span>
+            <span className="font-black uppercase tracking-tighter text-2xl italic leading-none">Restaurant Pro</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-1.5 bg-black/20 rounded-full border border-white/20">
             <span className="w-2 h-2 bg-white rounded-full animate-pulse" />

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getProducts, upsertProduct, deleteProduct, getInventory, updateStock } from '../../lib/dataService';
+import { getProducts, upsertProduct, deleteProduct, getInventory, updateStock, getCategories } from '../../lib/dataService';
 import { Plus, Edit2, Trash2, Save, X, Package, FileText, Download, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { exportToPDF, exportToExcel } from '../../lib/exportUtils';
 
 export default function ProductAdmin() {
   const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,18 +14,34 @@ export default function ProductAdmin() {
   const [inventory, setInventory] = useState<any[]>([]);
 
   useEffect(() => {
-    loadProducts();
-    loadInventory();
+    loadInitialData();
   }, []);
+
+  const loadInitialData = async () => {
+    setIsLoading(true);
+    await Promise.all([
+      loadProducts(),
+      loadInventory(),
+      loadCategories()
+    ]);
+    setIsLoading(false);
+  };
 
   const loadProducts = async () => {
     try {
       const data = await getProducts();
       setProducts(data || []);
     } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
+      console.error('Error loading products:', e);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data || []);
+    } catch (e) {
+      console.error('Error loading categories:', e);
     }
   };
 
@@ -33,7 +50,7 @@ export default function ProductAdmin() {
       const data = await getInventory();
       setInventory(data || []);
     } catch (e) {
-      console.error(e);
+      console.error('Error loading inventory:', e);
     }
   };
 
@@ -70,13 +87,21 @@ export default function ProductAdmin() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
+    
+    // Validaciones básicas
+    if (!editingProduct.nombre || editingProduct.precio <= 0) {
+      alert('Por favor completa los campos correctamente');
+      return;
+    }
+
     try {
       await upsertProduct(editingProduct);
-      loadProducts();
+      await loadProducts();
       setIsModalOpen(false);
       setEditingProduct(null);
     } catch (e) {
-      alert('Error al guardar');
+      console.error('Save error details:', e);
+      alert('Error al guardar: Verifique que todos los campos sean válidos.');
     }
   };
 
@@ -107,7 +132,11 @@ export default function ProductAdmin() {
           </button>
           <button 
             onClick={() => {
-              setEditingProduct({ nombre: '', precio: 0 });
+              setEditingProduct({ 
+                nombre: '', 
+                precio: 0, 
+                categoria_id: categories.length > 0 ? categories[0].id : '' 
+              });
               setIsModalOpen(true);
             }}
             className="w-full md:w-auto p-4 bg-white text-rose-600 rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-50 transition-all font-black text-[10px] tracking-widest uppercase shadow-xl"
@@ -235,87 +264,93 @@ export default function ProductAdmin() {
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white w-full max-w-xl rounded-none p-12 border-t-[12px] border-rose-600 shadow-[0_0_100px_rgba(0,0,0,0.3)] overflow-y-auto max-h-[90vh]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="relative bg-white w-full max-w-lg shadow-2xl overflow-hidden border border-slate-100"
             >
-              <div className="flex justify-between items-center mb-10">
+              {/* Header Discreto */}
+              <div className="bg-slate-50 border-b border-slate-100 px-8 py-6 flex justify-between items-center">
                 <div>
-                  <h3 className="text-4xl lg:text-5xl font-black uppercase italic tracking-tighter leading-none text-slate-950">PRODUCTO</h3>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-2">Configuración Técnica de Ítem</p>
+                  <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 italic">Editor de Producto</h3>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Ficha Técnica Operativa</p>
                 </div>
                 <button 
                   onClick={() => setIsModalOpen(false)} 
-                  className="w-12 h-12 bg-slate-100 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all transform hover:rotate-90"
+                  className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-rose-600 transition-colors"
                 >
-                   <X className="w-6 h-6" />
+                   <X className="w-5 h-5" />
                 </button>
               </div>
               
-              <form onSubmit={handleSave} className="space-y-10">
-                <div className="space-y-4">
+              <form onSubmit={handleSave} className="p-8 space-y-6">
+                <div className="space-y-5">
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Denominación</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 px-1">Nombre Comercial</label>
                     <input 
                       required
                       value={editingProduct.nombre}
                       onChange={(e) => setEditingProduct({ ...editingProduct, nombre: e.target.value })}
-                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 text-lg font-black uppercase tracking-tight focus:border-rose-600 outline-none transition-all placeholder:text-slate-300"
-                      placeholder="Nombre del Producto"
+                      className="w-full bg-slate-50 border border-slate-200 p-3 text-sm font-bold focus:border-rose-600 focus:bg-white outline-none transition-all"
+                      placeholder="Ej. Ensalada César"
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Valor Mercadeo</label>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 px-1">Precio</label>
                       <div className="relative">
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-rose-600">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-600 font-bold text-xs">$</span>
                         <input 
                           type="number"
                           step="0.01"
                           required
                           value={editingProduct.precio}
                           onChange={(e) => setEditingProduct({ ...editingProduct, precio: parseFloat(e.target.value) })}
-                          className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 pl-10 text-xl font-black italic tracking-tighter focus:border-rose-600 outline-none transition-all"
+                          className="w-full bg-slate-50 border border-slate-200 p-3 pl-7 text-sm font-black focus:border-rose-600 focus:bg-white outline-none transition-all"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Categoría ID</label>
-                      <select className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 text-sm font-black uppercase tracking-widest focus:border-rose-600 outline-none transition-all">
-                        <option>GENERAL</option>
-                        <option>ENTRADAS</option>
-                        <option>PLATOS FUERTES</option>
-                        <option>BEBIDAS</option>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 px-1">Categoría</label>
+                      <select 
+                        value={editingProduct.categoria_id || ''}
+                        onChange={(e) => setEditingProduct({ ...editingProduct, categoria_id: e.target.value })}
+                        required
+                        className="w-full bg-slate-50 border border-slate-200 p-3 text-xs font-bold uppercase tracking-tight focus:border-rose-600 focus:bg-white outline-none transition-all cursor-pointer"
+                      >
+                        <option value="">Seleccionar...</option>
+                        {categories.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.nombre.toUpperCase()}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Atributos / Descripción</label>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 px-1">Descripción corta</label>
                     <textarea 
                       value={editingProduct.descripcion || ''}
                       onChange={(e) => setEditingProduct({ ...editingProduct, descripcion: e.target.value })}
-                      className="w-full bg-slate-50 border-2 border-slate-100 rounded-none p-5 text-sm font-bold focus:border-rose-600 outline-none transition-all h-32 resize-none"
-                      placeholder="Detalles de preparación e insumos..."
+                      className="w-full bg-slate-50 border border-slate-200 p-3 text-xs font-medium focus:border-rose-600 focus:bg-white outline-none transition-all h-24 resize-none leading-relaxed"
+                      placeholder="Detalles sobre el producto..."
                     />
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-6">
+                <div className="flex gap-3 pt-4">
                   <button 
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="flex-1 py-5 bg-slate-100 text-slate-400 hover:bg-black hover:text-white rounded-none font-black uppercase text-xs tracking-widest transition-all"
+                    className="flex-1 py-3.5 bg-slate-100 text-slate-500 hover:bg-slate-200 rounded-lg font-black uppercase text-[10px] tracking-widest transition-all"
                   >
-                    CANCELAR
+                    Salir
                   </button>
                   <button 
                     type="submit"
-                    className="flex-1 py-5 bg-rose-600 text-white rounded-none font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-rose-600/20 hover:bg-black transition-all"
+                    className="flex-1 py-3.5 bg-rose-600 text-white hover:bg-black rounded-lg font-black uppercase text-[10px] tracking-widest shadow-lg shadow-rose-200 transition-all"
                   >
-                    GUARDAR CAMBIOS
+                    Actualizar Item
                   </button>
                 </div>
               </form>

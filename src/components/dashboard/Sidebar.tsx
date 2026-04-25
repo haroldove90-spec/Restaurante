@@ -63,7 +63,7 @@ export default function Sidebar({ role, onSignOut, userName, activeTab, onTabCha
         <div className="bg-rose-600 p-8 flex flex-col justify-end min-h-[160px] text-white overflow-hidden relative shadow-md">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl transform translate-x-16 -translate-y-16" />
           <div className="relative">
-            <span className="font-black text-4xl tracking-tighter leading-none italic block mb-1">JUSHI</span>
+            <span className="font-black text-4xl tracking-tighter leading-none italic block mb-1">Restaurant Pro</span>
             <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-80">SYSTEM PRO</span>
           </div>
           <button onClick={onClose} className="lg:hidden absolute top-4 right-4 p-2 bg-black/20 rounded-full">

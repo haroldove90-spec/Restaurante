@@ -18,7 +18,7 @@ function AppContent() {
       <div className="h-screen w-full flex items-center justify-center bg-black">
         <div className="flex flex-col items-center gap-6">
           <div className="bg-rose-600 px-8 py-4">
-             <span className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">JUSHI</span>
+             <span className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">Restaurant Pro</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-4 h-4 bg-rose-600 rounded-full animate-ping" />

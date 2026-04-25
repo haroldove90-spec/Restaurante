@@ -15,10 +15,10 @@ export default defineConfig(({mode}) => {
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
           name: 'Restaurant Pro',
-          short_name: 'RestoPro',
+          short_name: 'RestPro',
           description: 'Sistema Integral para Digitalización de Restaurantes',
-          theme_color: '#0f172a',
-          background_color: '#0f172a',
+          theme_color: '#e11d48',
+          background_color: '#ffffff',
           display: 'standalone',
           icons: [
             {
