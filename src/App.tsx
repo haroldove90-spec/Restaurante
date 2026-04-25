@@ -1,6 +1,7 @@
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './components/Login';
 import DashboardLayout from './components/dashboard/DashboardLayout';
+import InstallPWA from './components/InstallPWA';
 import { useState, useEffect } from 'react';
 import { UserRole } from './types/database';
 
@@ -27,6 +28,7 @@ function AppContent() {
   if (!user && !demoRole) {
     return (
       <>
+        <InstallPWA />
         <DemoSwitcher setRole={setDemoRole} />
         <LoginPage />
       </>
@@ -64,6 +66,7 @@ function AppContent() {
 
   return (
     <>
+      <InstallPWA />
       <DemoSwitcher setRole={setDemoRole} currentRole={currentRole} />
       <DashboardLayout 
         role={currentRole as UserRole} 

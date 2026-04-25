@@ -1,14 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
-const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Las variables de entorno de Supabase no están configuradas.');
+const isConfigured = supabaseUrl !== '' && supabaseAnonKey !== '';
+
+if (!isConfigured) {
+  console.warn('Las variables de entorno de Supabase no están configuradas. El sistema funcionará en modo DEMO.');
 }
 
-/**
- * Cliente de Supabase para uso en el cliente (Browser).
- * Nota: En Next.js se usaría @supabase/auth-helpers-nextjs o @supabase/ssr.
- */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = isConfigured 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null as any;
+
+export { isConfigured };
