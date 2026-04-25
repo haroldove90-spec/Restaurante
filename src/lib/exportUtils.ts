@@ -2,31 +2,39 @@ import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
-export const exportToPDF = (title: string, headers: string[][], data: any[][], fileName: string) => {
-  const doc = new jsPDF();
-  
-  doc.setFontSize(20);
-  doc.text(title, 14, 22);
-  doc.setFontSize(11);
-  doc.setTextColor(100);
-  doc.text(`Generado el: ${new Date().toLocaleString()}`, 14, 30);
+export const exportToPDF = (title: string, columns: string[], data: any[]) => {
+  const doc = new jsPDF() as any;
 
-  (doc as any).autoTable({
-    head: headers,
+  // Header Style
+  doc.setFillColor(15, 23, 42); // slate-900
+  doc.rect(0, 0, 210, 40, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(24);
+  doc.setFont('helvetica', 'bold');
+  doc.text('RESTAURANT PRO', 105, 20, { align: 'center' });
+  
+  doc.setFontSize(10);
+  doc.setTextColor(150, 150, 150);
+  doc.text(title.toUpperCase(), 105, 30, { align: 'center' });
+
+  // Table
+  doc.autoTable({
+    startY: 50,
+    head: [columns],
     body: data,
-    startY: 35,
-    theme: 'grid',
-    headStyles: { fillColor: [79, 70, 229], textColor: 255, fontStyle: 'bold' },
-    alternateRowStyles: { fillColor: [249, 250, 251] },
-    margin: { top: 35 },
+    theme: 'striped',
+    headStyles: { fillColor: [79, 70, 229], fontSize: 10, fontStyle: 'bold' }, // indigo-600
+    styles: { fontSize: 9, cellPadding: 4 },
+    alternateRowStyles: { fillColor: [248, 250, 252] }
   });
 
-  doc.save(`${fileName}.pdf`);
+  doc.save(`${title.toLowerCase().replace(/\s/g, '_')}_${new Date().getTime()}.pdf`);
 };
 
-export const exportToExcel = (data: any[], fileName: string) => {
+export const exportToExcel = (title: string, data: any[]) => {
   const worksheet = XLSX.utils.json_to_sheet(data);
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  XLSX.writeFile(workbook, `${fileName}.xlsx`);
+  XLSX.utils.book_append_sheet(workbook, worksheet, title);
+  XLSX.writeFile(workbook, `${title.toLowerCase().replace(/\s/g, '_')}_${new Date().getTime()}.xlsx`);
 };
